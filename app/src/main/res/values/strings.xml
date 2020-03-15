@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">GitHubUsers</string>
+    <string name="progressbar_description">Пожалуйста, подождите…</string>
+    <string name="main_title_one">GitHub</string>
+    <string name="main_title_two">Users</string>
+    <string name="toolbar_title_detail">Информация о пользователе</string>
 </resources>
