@@ -7,9 +7,7 @@ import io.reactivex.Single
 
 class UserRepository(private val apiService: ApiServiceUsers) {
 
-    fun getUsers(since: Int): Single<List<User>> = apiService.getUsers(since,
-        AMOUNT_LOAD_USER
-    )
+    fun getUsers(since: Int): Single<List<User>> = apiService.getUsers(since, AMOUNT_LOAD_USER)
 
     fun getUser(login: String): Single<User> = apiService.getUser(login)
 }
