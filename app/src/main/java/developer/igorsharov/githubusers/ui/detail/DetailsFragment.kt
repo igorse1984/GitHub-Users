@@ -32,32 +32,26 @@ class DetailsFragment : Fragment(R.layout.detail_fragment) {
         viewModel.run {
             setData(arguments?.getString(USER_NAME) ?: "")
 
-            getUrlAvatar().observe(viewLifecycleOwner, Observer {
+            user.observe(viewLifecycleOwner, Observer {
                 Picasso.get()
-                    .load(it)
+                    .load(it.avatar_url)
                     .fit()
                     .centerCrop()
                     .into(user_image)
 
                 user_image_layout.visibility = View.VISIBLE
-            })
 
-            getNickName().observe(viewLifecycleOwner, Observer {
-                user_name.text = it
-            })
+                user_name.text = it.login
 
-            getHtmlUrl().observe(viewLifecycleOwner, Observer {
                 link.apply {
-                    text = getClickableUrlText(requireActivity(), it)
+                    text = getClickableUrlText(requireActivity(), it.html_url)
                     movementMethod = LinkMovementMethod.getInstance()
                 }
+
+                location.text = it.location
             })
 
-            getLocation().observe(viewLifecycleOwner, Observer {
-                location.text = it
-            })
-
-            getShowProgress().observe(viewLifecycleOwner, Observer {
+            progress.observe(viewLifecycleOwner, Observer {
                 (activity as ProgressBar).showProgress(it)
             })
         }
