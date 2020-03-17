@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import developer.igorsharov.githubusers.R
 import developer.igorsharov.githubusers.adapter.UsersAdapter
 import developer.igorsharov.githubusers.pojo.User
-import developer.igorsharov.githubusers.ui.detail.DetailsFragment
 import developer.igorsharov.githubusers.ui.PaginationScrollListener
+import developer.igorsharov.githubusers.ui.detail.DetailsFragment
 import kotlinx.android.synthetic.main.main_activity.*
 
 
@@ -51,19 +51,19 @@ class MainActivity : AppCompatActivity(R.layout.main_activity), ProgressBar {
         }
 
         viewModel.run {
-            getLoadState().observe(this@MainActivity, Observer {
+            loadState.observe(this@MainActivity, Observer {
                 scrollListener.setLoadState(it)
             })
 
-            getAllItems().observe(this@MainActivity, Observer {
+            usersData.observe(this@MainActivity, Observer {
                 recyclerAdapter.setData(it)
             })
 
-            getShowDetail().observe(this@MainActivity, Observer {
+            userData.observe(this@MainActivity, Observer {
                 showDetailScreen(it)
             })
 
-            getShowProgress().observe(this@MainActivity, Observer {
+            progressState.observe(this@MainActivity, Observer {
                 showProgress(it)
             })
         }

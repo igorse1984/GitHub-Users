@@ -3,40 +3,50 @@ package developer.igorsharov.githubusers.ui.root
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import developer.igorsharov.githubusers.retrofit.ApiServiceUsers
-import developer.igorsharov.githubusers.pojo.User
+import developer.igorsharov.githubusers.App
 import developer.igorsharov.githubusers.model.UserRepository
+import developer.igorsharov.githubusers.pojo.User
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
 class MainViewModel : ViewModel() {
-    private val loadState: MutableLiveData<Boolean> = MutableLiveData()
-    private val showDetailScreen: MutableLiveData<User> = MutableLiveData()
-    private val showProgress: MutableLiveData<Boolean> = MutableLiveData()
-    private val liveDataUsers: MutableLiveData<List<User>> by lazy {
+    @Inject
+    lateinit var repository: UserRepository
+
+    private val _loadState: MutableLiveData<Boolean> = MutableLiveData()
+    private val _userData: MutableLiveData<User> = MutableLiveData()
+    private val _progressState: MutableLiveData<Boolean> = MutableLiveData()
+    private val _usersData: MutableLiveData<List<User>> by lazy {
         MutableLiveData<List<User>>().also { loadUsers() }
     }
-
     private var lastSince: Int = 0
     private val compositeDisposable = CompositeDisposable()
-    private val repository = UserRepository(ApiServiceUsers.create())
     private val users = mutableListOf<User>()
 
-    fun getAllItems(): LiveData<List<User>> = liveDataUsers
+    init {
+        App.appComponent.inject(this)
+    }
 
-    fun getLoadState(): LiveData<Boolean> = loadState
+    val usersData: LiveData<List<User>>
+        get() = _usersData
 
-    fun getShowDetail(): LiveData<User> = showDetailScreen
+    val loadState: LiveData<Boolean>
+        get() = _loadState
 
-    fun getShowProgress(): LiveData<Boolean> = showProgress
+    val userData: LiveData<User>
+        get() = _userData
+
+    val progressState: LiveData<Boolean>
+        get() = _progressState
 
     fun loadNextData() {
         loadUsers()
     }
 
     fun onItemClick(position: Int) {
-        showDetailScreen.value = users[position]
+        _userData.value = users[position]
     }
 
     override fun onCleared() {
@@ -49,14 +59,14 @@ class MainViewModel : ViewModel() {
             repository.getUsers(lastSince)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { showProgress.value = true }
+                .doOnSubscribe { _progressState.value = true }
                 .doFinally {
-                    loadState.value = false
-                    showProgress.value = false
+                    _loadState.value = false
+                    _progressState.value = false
                 }
                 .subscribe { users ->
                     this.users.addAll(users)
-                    liveDataUsers.value = this.users
+                    _usersData.value = this.users
                     lastSince = users.last().id
                 })
     }
