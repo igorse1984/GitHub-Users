@@ -3,20 +3,27 @@ package developer.igorsharov.githubusers.ui.detail
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import developer.igorsharov.githubusers.App
 import developer.igorsharov.githubusers.model.UserRepository
 import developer.igorsharov.githubusers.pojo.User
 import developer.igorsharov.githubusers.retrofit.ApiServiceUsers
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
 class DetailViewModel : ViewModel() {
-    private val compositeDisposable = CompositeDisposable()
-    private val repository = UserRepository(ApiServiceUsers.create())
-    private lateinit var login: String
+    @Inject
+    lateinit var repository: UserRepository
 
+    private lateinit var login: String
     private val _user = MutableLiveData<User>()
     private val _progress = MutableLiveData<Boolean>()
+    private val compositeDisposable = CompositeDisposable()
+
+    init {
+        App.appComponent.inject(this)
+    }
 
     val user: LiveData<User>
         get() = _user
