@@ -1,2 +1,5 @@
 rootProject.name='GitHubUsers'
 include ':app'
+include ':usecases'
+include ':data'
+include ':domain'

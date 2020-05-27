@@ -1,11 +1,13 @@
-package developer.igorsharov.githubusers.di.module
+package developer.igorsharov.githubusers.framework.di.module
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import developer.igorsharov.githubusers.BASE_URL
-import developer.igorsharov.githubusers.retrofit.ApiServiceUsers
+import developer.igorsharov.githubusers.framework.retrofit.ApiServiceUsers
+import developer.igorsharov.githubusers.framework.retrofit.ApiSourceUsers
+import igor.sharov.data.PersistenceSourceUsers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -40,4 +42,9 @@ class ApiModule {
     @Singleton
     fun provideApiServiceUsers(retrofit: Retrofit): ApiServiceUsers =
         retrofit.create(ApiServiceUsers::class.java)
+
+    @Provides
+    @Singleton
+    fun provideApiSourceUsers(apiServiceUsers: ApiServiceUsers): PersistenceSourceUsers =
+        ApiSourceUsers(apiServiceUsers)
 }

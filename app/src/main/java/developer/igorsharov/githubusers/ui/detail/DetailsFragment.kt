@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import com.squareup.picasso.Picasso
 import developer.igorsharov.githubusers.R
 import developer.igorsharov.githubusers.getClickableUrlText
+import developer.igorsharov.githubusers.ui.pojo.User
 import developer.igorsharov.githubusers.ui.root.ProgressBar
 import kotlinx.android.synthetic.main.detail_fragment.*
 
@@ -32,28 +33,29 @@ class DetailsFragment : Fragment(R.layout.detail_fragment) {
         viewModel.run {
             setData(arguments?.getString(USER_NAME) ?: "")
 
-            user.observe(viewLifecycleOwner, Observer {
-                Picasso.get()
-                    .load(it.avatar_url)
-                    .fit()
-                    .centerCrop()
-                    .into(user_image)
-
-                user_image_layout.visibility = View.VISIBLE
-
-                user_name.text = it.login
-
-                link.apply {
-                    text = getClickableUrlText(requireActivity(), it.html_url)
-                    movementMethod = LinkMovementMethod.getInstance()
-                }
-
-                location.text = it.location
-            })
+            user.observe(viewLifecycleOwner, Observer { setUser(it) })
 
             progress.observe(viewLifecycleOwner, Observer {
                 (activity as ProgressBar).showProgress(it)
             })
         }
+    }
+
+    private fun setUser(user: User) {
+        Picasso.get()
+            .load(user.avatarUrl)
+            .fit()
+            .centerCrop()
+            .into(user_image)
+
+        user_image_layout.visibility = View.VISIBLE
+        user_name.text = user.username
+
+        link.run {
+            text = getClickableUrlText(requireActivity(), user.repositoryUrl)
+            movementMethod = LinkMovementMethod.getInstance()
+        }
+
+        location.text = user.location
     }
 }

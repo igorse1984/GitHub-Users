@@ -1,6 +1,6 @@
-package developer.igorsharov.githubusers.retrofit
+package developer.igorsharov.githubusers.framework.retrofit
 
-import developer.igorsharov.githubusers.pojo.User
+import igor.sharov.domain.User
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Path

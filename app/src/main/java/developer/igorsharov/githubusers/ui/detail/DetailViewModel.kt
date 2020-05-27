@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import developer.igorsharov.githubusers.App
-import developer.igorsharov.githubusers.model.UserRepository
-import developer.igorsharov.githubusers.pojo.User
-import developer.igorsharov.githubusers.retrofit.ApiServiceUsers
+import developer.igorsharov.githubusers.ui.pojo.User
+import developer.igorsharov.githubusers.ui.pojo.mapToPresentation
+import igor.sharov.usecases.GetUsersUseCase
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -14,9 +14,8 @@ import javax.inject.Inject
 
 class DetailViewModel : ViewModel() {
     @Inject
-    lateinit var repository: UserRepository
+    lateinit var usersUseCase: GetUsersUseCase
 
-    private lateinit var login: String
     private val _user = MutableLiveData<User>()
     private val _progress = MutableLiveData<Boolean>()
     private val compositeDisposable = CompositeDisposable()
@@ -34,8 +33,7 @@ class DetailViewModel : ViewModel() {
     fun setData(login: String) {
         if (login.isEmpty()) return
 
-        this.login = login
-        loadUser()
+        loadUser(login)
     }
 
     override fun onCleared() {
@@ -43,21 +41,13 @@ class DetailViewModel : ViewModel() {
         super.onCleared()
     }
 
-    private fun loadUser() {
+    private fun loadUser(login: String) {
         compositeDisposable.add(
-            repository.getUser(login)
+            usersUseCase.getUser(login)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { _progress.value = true }
                 .doFinally { _progress.value = false }
-                .subscribe { user ->
-                    _user.value = User(
-                        0,
-                        user.login,
-                        user.avatar_url,
-                        user.html_url,
-                        user.location
-                    )
-                })
+                .subscribe { apiUser -> _user.value = apiUser.mapToPresentation() })
     }
 }

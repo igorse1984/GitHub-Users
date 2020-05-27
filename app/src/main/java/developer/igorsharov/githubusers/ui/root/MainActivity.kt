@@ -9,10 +9,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import developer.igorsharov.githubusers.R
-import developer.igorsharov.githubusers.adapter.UsersAdapter
-import developer.igorsharov.githubusers.pojo.User
 import developer.igorsharov.githubusers.ui.PaginationScrollListener
+import developer.igorsharov.githubusers.ui.adapter.UsersAdapter
 import developer.igorsharov.githubusers.ui.detail.DetailsFragment
+import developer.igorsharov.githubusers.ui.pojo.User
 import kotlinx.android.synthetic.main.main_activity.*
 
 
@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity(R.layout.main_activity), ProgressBar {
 
     private fun showDetailScreen(user: User) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.container, DetailsFragment.newInstance(user.login))
+            .replace(R.id.container, DetailsFragment.newInstance(user.username))
             .addToBackStack(null)
             .commit()
     }
