@@ -1,4 +1,4 @@
-package developer.igorsharov.githubusers.adapter
+package developer.igorsharov.githubusers.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import developer.igorsharov.githubusers.R
-import developer.igorsharov.githubusers.pojo.User
+import developer.igorsharov.githubusers.ui.pojo.User
 
 class UsersAdapter : RecyclerView.Adapter<UsersAdapter.UserHolder>() {
     private val listUser = mutableListOf<User>()
@@ -29,8 +29,8 @@ class UsersAdapter : RecyclerView.Adapter<UsersAdapter.UserHolder>() {
     override fun getItemCount(): Int = listUser.size
 
     override fun onBindViewHolder(holder: UserHolder, position: Int) {
-        holder.setName(listUser[position].login)
-        holder.setPhoto(listUser[position].avatar_url)
+        holder.setName(listUser[position].username)
+        listUser[position].avatarUrl?.let { holder.setPhoto(it) }
     }
 
     fun setData(listUser: List<User>) {

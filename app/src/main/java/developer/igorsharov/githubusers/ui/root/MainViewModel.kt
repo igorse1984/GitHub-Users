@@ -3,17 +3,20 @@ package developer.igorsharov.githubusers.ui.root
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import developer.igorsharov.githubusers.AMOUNT_LOAD_USER
 import developer.igorsharov.githubusers.App
-import developer.igorsharov.githubusers.model.UserRepository
-import developer.igorsharov.githubusers.pojo.User
+import developer.igorsharov.githubusers.ui.pojo.User
+import developer.igorsharov.githubusers.ui.pojo.mapToPresentation
+import igor.sharov.usecases.GetUsersUseCase
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
+import igor.sharov.domain.User as DomainUser
 
 class MainViewModel : ViewModel() {
     @Inject
-    lateinit var repository: UserRepository
+    lateinit var usersUseCase: GetUsersUseCase
 
     private val _loadState: MutableLiveData<Boolean> = MutableLiveData()
     private val _userData: MutableLiveData<User> = MutableLiveData()
@@ -23,7 +26,7 @@ class MainViewModel : ViewModel() {
     }
     private var lastSince: Int = 0
     private val compositeDisposable = CompositeDisposable()
-    private val users = mutableListOf<User>()
+    private val _users = mutableListOf<User>()
 
     init {
         App.appComponent.inject(this)
@@ -46,7 +49,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun onItemClick(position: Int) {
-        _userData.value = users[position]
+        _userData.value = _users[position]
     }
 
     override fun onCleared() {
@@ -56,7 +59,7 @@ class MainViewModel : ViewModel() {
 
     private fun loadUsers() {
         compositeDisposable.add(
-            repository.getUsers(lastSince)
+            usersUseCase.getUsers(lastSince, AMOUNT_LOAD_USER)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { _progressState.value = true }
@@ -65,8 +68,8 @@ class MainViewModel : ViewModel() {
                     _progressState.value = false
                 }
                 .subscribe { users ->
-                    this.users.addAll(users)
-                    _usersData.value = this.users
+                    _users.addAll(users.map(DomainUser::mapToPresentation))
+                    _usersData.value = _users
                     lastSince = users.last().id
                 })
     }
